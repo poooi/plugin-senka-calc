@@ -3,7 +3,7 @@ import { isEmpty } from 'lodash'
 import { join } from 'path-extra'
 import { observer, observe } from 'redux-observers'
 
-import { store } from 'views/createStore'
+import { store } from 'views/create-store'
 import { reducer } from './redux'
 import { baseDetailSelector, historyDataSelector, rankSelector } from './redux/selectors'
 import { storeHistoryData } from './redux/actions'
