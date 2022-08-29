@@ -14,7 +14,7 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     const { archive } = payload as InitializeAction
     return archive.exHistory
   }
-  case '@@Response/api_get_member/mapinfo/response': {
+  case '@@Response/kcsapi/api_get_member/mapinfo': {
     const current = moment.tz('Asia/Tokyo')
     const lastOfSenka = moment.tz('Asia/Tokyo').endOf('month').subtract(2, 'hours')
     // Don't record senka after 22:00 of the end day of month
@@ -31,7 +31,7 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     if (clearedMapList.length) {
       const rankNo = getDateNo()
       const list = [
-        ...state[rankNo],
+        ...state[rankNo] || [],
         ...clearedMapList,
       ]
       return {
