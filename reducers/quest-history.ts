@@ -14,7 +14,7 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     const { archive } = payload as InitializeAction
     return archive.questHistory
   }
-  case '@@Response/kcsapi/api_req_quest/clearitemget': {
+  case '@@Request/kcsapi/api_req_quest/clearitemget': {
     const current = moment.tz('Asia/Tokyo')
     const lastOfSenkaCycle = moment.tz('Asia/Tokyo').endOf('month').subtract(10, 'hours')
     const monthlyTaskRefresh = moment.tz('Asia/Tokyo').startOf('month').add(5, 'hours')
@@ -27,9 +27,9 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     const quest = SENKA_QUESTS.find(quest => quest.id === id)
     if (quest) {
       // 1000: will move to next month
-      const rankNo = current.isAfter(lastOfSenkaCycle) ? getDateNo() : 1000
+      const rankNo = current.isAfter(lastOfSenkaCycle) ? 1000 : getDateNo()
       const list = [
-        ...state[rankNo],
+        ...state[rankNo] || [],
         id,
       ]
       return {
