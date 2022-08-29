@@ -6,6 +6,8 @@
 
 Senka calculator for [poi](https://github.com/poooi/poi)
 
+Thanks [a26214311](https://github.com/a26214311/) for his plugin [poi-plugin-achievement](https://github.com/a26214311/poi-plugin-achievement), which became the base of poi-plugin-senka-calc@5
+
 [中文说明](/README.zh-CN.md)
 
 ## Usage

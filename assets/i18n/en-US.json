@@ -1,4 +1,9 @@
 {
-  "Auto-set the base value": "Automatically set the rate of ランキング and as base rate.",
-  "Auto-set tips": "We will automatically set your ranking rate and current exp as the base rate & exp, but the ranking rate may not relate to your current exp."
+  "Last Update {{ date }}": "Last Update: {{ date }}",
+  "Current ranking points {{ point }}": "Current ranking points: {{ point }}",
+  "Staging ranking points {{ point }}": "Staging ranking points: {{ point }}",
+  "Ranking points of planned extra operations {{ point }}": "Ranking points of planned extra operations: {{ point }}",
+  "Ranking points of planned quests {{ point }}": "Ranking points of planned quests: {{ point }}",
+  "Remaining ranking points to reach target {{ point }}": "Remaining ranking points to reach target: {{ point }}",
+  "Target of ranking points {{ point }}": "Target of ranking points: {{ point }}"
 }
