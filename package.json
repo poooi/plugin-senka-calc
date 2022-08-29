@@ -1,6 +1,6 @@
 {
   "name": "poi-plugin-senka-calc",
-  "version": "5.0.0",
+  "version": "5.0.1",
   "description": "Ranking point calculator for poi",
   "main": "index.js",
   "dependencies": {},
