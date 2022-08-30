@@ -1,7 +1,7 @@
 import path from 'path'
 import fs from 'fs-extra'
 import moment from 'moment-timezone'
-import { Archive, ExQuestHistory, LegacyArchive, SenkaHistory } from './type'
+import { Archive, ExQuestHistory, LegacyArchive } from './type'
 import { EX_MAPS, EMPTY_ARCHIVE, MILLISECONDS_OF_12_HOURS, SENKA_QUESTS, QUARTERLY_QUEST_REFRESH_MONTH } from './const'
 
 // Get record no
@@ -18,33 +18,6 @@ export const getRankDateNo = (ts: Date = new Date()): number => {
   const now = moment(ts).tz('Asia/Tokyo')
   const no = Math.trunc(now.diff(startOfSenkaRefresh) / MILLISECONDS_OF_12_HOURS)
   return no
-}
-
-export const senkaOfDay = (
-  experienceHistory: SenkaHistory,
-  latestExperience: number,
-  lastTimeStamp: number
-): SenkaHistory => {
-  const timeStamps = Object.keys(experienceHistory).map(s => parseInt(s)).sort((a, b) => a - b)
-  let lastTs = timeStamps[0]
-  const experienceDelta: SenkaHistory = []
-  timeStamps.map(ts => {
-    if (ts != timeStamps[0] && ts <= getDateNo()) {
-      const addsenka = (experienceHistory[ts] - experienceHistory[lastTs]) / 50000 * 35
-      if(experienceHistory[lastTs] > 0){
-        experienceDelta[ts] = addsenka
-      }
-      lastTs = ts
-    }
-  })
-
-  if(!experienceDelta[lastTimeStamp + 1]){
-    if(experienceHistory[lastTs] > 0 && lastTimeStamp <= getDateNo()) {
-      const addsenka = (latestExperience - experienceHistory[lastTs]) / 50000 * 35
-      experienceDelta[lastTimeStamp + 1] = addsenka
-    }
-  }
-  return experienceDelta
 }
 
 export const getAchieveFilePath = (memberId?: number) => {
