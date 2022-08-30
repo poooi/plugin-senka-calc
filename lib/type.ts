@@ -1,37 +1,9 @@
-import { Action, AnyAction } from 'redux'
 import { APIMstShip } from "kcsapi/api_start2/getData/response"
 
 export type SenkaHistory = Record<number, number>
 export type ExQuestHistory = Record<number, number[]>
 
 export type MstShipMap = Record<number, APIMstShip>
-
-export interface GameResponseEventDetail<RequestBody, ResponseBody> {
-  path: string
-  postBody: RequestBody
-  body: ResponseBody
-}
-
-export interface InitializeAction {
-  type: '@@poi-plugin-senka-calc/initialize',
-  archive: Archive,
-}
-
-export interface APIAction<ResponseType> {
-  type: string,
-  body: ResponseType,
-}
-
-export interface InputAction<T> {
-  type: string,
-  value: T,
-}
-
-export type ReducerWithUpperState<S = any, A extends Action = AnyAction, Store = any> = (
-  state: S | undefined,
-  action: A,
-  store: Store | undefined
-) => S
 
 export interface UserData {
   api_itbrdpdbkynm: string, // comment

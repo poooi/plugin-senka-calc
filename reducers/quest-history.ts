@@ -1,17 +1,17 @@
 import { Reducer } from "redux"
-import { APIReqQuestClearitemgetRequest } from 'kcsapi/api_req_quest/clearitemget/request'
-import { ExQuestHistory, InitializeAction, APIAction } from "../lib/type"
+import { ExQuestHistory } from "../lib/type"
 import { getDateNo } from "../lib/util"
 import { QUARTERLY_QUEST_REFRESH_MONTH, SENKA_QUESTS } from "../lib/const"
 import moment from "moment-timezone"
+import { APIReqQuestClearitemgetRequestAction, InitializeAction } from "./actions"
 
-type Action = APIAction<APIReqQuestClearitemgetRequest> | InitializeAction
+type Action = APIReqQuestClearitemgetRequestAction | InitializeAction
 
 export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) => {
   const { type } = payload
   switch (type) {
   case '@@poi-plugin-senka-calc/initialize': {
-    const { archive } = payload as InitializeAction
+    const { archive } = payload
     return archive.questHistory
   }
   case '@@Request/kcsapi/api_req_quest/clearitemget': {
@@ -22,7 +22,7 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     if (QUARTERLY_QUEST_REFRESH_MONTH.includes(current.month()) && current.isBefore(monthlyTaskRefresh)) {
       return state
     }
-    const { body } = payload as APIAction<APIReqQuestClearitemgetRequest>
+    const { body } = payload
     const id = parseInt(body.api_quest_id)
     const quest = SENKA_QUESTS.find(quest => quest.id === id)
     if (quest) {

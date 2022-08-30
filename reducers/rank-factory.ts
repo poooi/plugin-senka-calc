@@ -1,12 +1,13 @@
 
 import { Reducer } from "redux"
-import { InitializeAction, RankingAPIData, APIAction, SenkaHistory, UserData } from "../lib/type"
+import { SenkaHistory, UserData } from "../lib/type"
 import { getRankDateNo } from "../lib/util"
 
 import { magicManager } from '../lib/magic'
+import { APIRankingAction, InitializeAction } from "./actions"
 
 type Anchor = 5 | 20 | 100 | 501 | 'user'
-type Action = APIAction<RankingAPIData> | InitializeAction
+type Action = APIRankingAction | InitializeAction
 
 function getUpdatedSenkaHistory(state: SenkaHistory, user: UserData) {
   const rankNo = user.api_mxltvkpyuklh
@@ -24,7 +25,7 @@ export const reducerFactory = (anchor: Anchor): Reducer<SenkaHistory, Action> =>
     const { type } = payload
     switch (type) {
     case '@@poi-plugin-senka-calc/initialize': {
-      const { archive } = payload as InitializeAction
+      const { archive } = payload
       switch (anchor) {
       case 5:
         return archive.rank5
@@ -39,7 +40,7 @@ export const reducerFactory = (anchor: Anchor): Reducer<SenkaHistory, Action> =>
       }
     }
     case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
-      const { body } = payload as APIAction<RankingAPIData>
+      const { body } = payload
       const userList = body.api_list
       const page = body.api_disp_page
       magicManager.updateMagicNum(userList)

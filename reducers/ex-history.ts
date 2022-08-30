@@ -1,17 +1,17 @@
-import { ExQuestHistory, InitializeAction, APIAction } from "../lib/type"
+import { ExQuestHistory } from "../lib/type"
 import { Reducer } from "redux"
-import { APIGetMemberMapinfoResponse } from 'kcsapi/api_get_member/mapinfo/response'
 import { getDateNo } from "../lib/util"
 import { EX_MAPS } from "../lib/const"
 import moment from "moment-timezone"
+import { APIGetMemberMapinfoResponseAction, InitializeAction } from "./actions"
 
-type Action = APIAction<APIGetMemberMapinfoResponse> | InitializeAction
+type Action = APIGetMemberMapinfoResponseAction | InitializeAction
 
 export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) => {
   const { type } = payload
   switch (type) {
   case '@@poi-plugin-senka-calc/initialize': {
-    const { archive } = payload as InitializeAction
+    const { archive } = payload
     return archive.exHistory
   }
   case '@@Response/kcsapi/api_get_member/mapinfo': {
@@ -21,7 +21,7 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
     if (current.isAfter(lastOfSenka)) {
       return state
     }
-    const { body } = payload as APIAction<APIGetMemberMapinfoResponse>
+    const { body } = payload
     const currentClearedEx = new Set(Object.values(state).reduce((a, b) => [...a, ...b], []))
     const clearedMapList = Object.keys(EX_MAPS).map(id => parseInt(id))
       .filter((id) => {

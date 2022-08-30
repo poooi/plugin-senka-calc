@@ -1,21 +1,21 @@
 
 import { Reducer } from "redux"
-import { InitializeAction, RankingAPIData, APIAction } from "../lib/type"
 
 import { magicManager } from '../lib/magic'
+import { APIRankingAction, InitializeAction } from "./actions"
 
-type Action = APIAction<RankingAPIData> | InitializeAction
+type Action = APIRankingAction | InitializeAction
 
 
 export const reducer: Reducer<number, Action> = (state = -1, payload) => {
   const { type } = payload
   switch (type) {
   case '@@poi-plugin-senka-calc/initialize': {
-    const { archive } = payload as InitializeAction
+    const { archive } = payload
     return archive.currentRank
   }
   case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
-    const { body } = payload as APIAction<RankingAPIData>
+    const { body } = payload
     const userList = body.api_list
     magicManager.updateMagicNum(userList)
     const { nickname } = magicManager

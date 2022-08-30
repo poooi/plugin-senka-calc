@@ -1,18 +1,18 @@
 
 import { Reducer } from "redux"
-import { InitializeAction, InputAction } from "../lib/type"
+import { InitializeAction, UpdateTargetSenkaAction } from "./actions"
 
-type Action = InputAction<number> | InitializeAction
+type Action = UpdateTargetSenkaAction | InitializeAction
 
 export const reducer: Reducer<number, Action> = (state = 3600, payload) => {
   const { type } = payload
   switch (type) {
   case '@@poi-plugin-senka-calc/initialize': {
-    const { archive } = payload as InitializeAction
+    const { archive } = payload
     return archive.targetSenka
   }
   case '@@poi-plugin-senka-calc/update-target-senka': {
-    const { value } = payload as InputAction<number>
+    const { value } = payload
     if (value >= 0) {
       return value
     }
