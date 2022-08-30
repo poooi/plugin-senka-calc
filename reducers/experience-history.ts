@@ -65,7 +65,7 @@ export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
     if (!state[dateNo]) {
       return {
         ...state,
-        [dateNo]: currentExperience,
+        [dateNo]: state[1000] || currentExperience,
         1000: currentExperience,
       }
     } else {
