@@ -5,6 +5,7 @@ import { getRankDateNo } from "../lib/util"
 
 import { magicManager } from '../lib/magic'
 import { APIRankingAction, InitializeAction } from "./actions"
+import moment from "moment-timezone"
 
 type Anchor = 5 | 20 | 100 | 501 | 'user'
 type Action = APIRankingAction | InitializeAction
@@ -40,6 +41,12 @@ export const reducerFactory = (anchor: Anchor): Reducer<SenkaHistory, Action> =>
       }
     }
     case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
+      const startOfRecord = moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours')
+      const now = moment.tz('Asia/Tokyo')
+      // the ranking api still returns data of former month, skip recording
+      if (now.isBefore(startOfRecord)) {
+        return state
+      }
       const { body } = payload
       const userList = body.api_list
       const page = body.api_disp_page

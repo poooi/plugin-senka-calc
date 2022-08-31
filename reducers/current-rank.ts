@@ -1,4 +1,5 @@
 
+import moment from "moment-timezone"
 import { Reducer } from "redux"
 
 import { magicManager } from '../lib/magic'
@@ -15,6 +16,12 @@ export const reducer: Reducer<number, Action> = (state = -1, payload) => {
     return archive.currentRank
   }
   case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
+    const startOfRecord = moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours')
+    const now = moment.tz('Asia/Tokyo')
+    // the ranking api still returns data of former month, skip recording
+    if (now.isBefore(startOfRecord)) {
+      return state
+    }
     const { body } = payload
     const userList = body.api_list
     magicManager.updateMagicNum(userList)
