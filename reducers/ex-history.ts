@@ -22,24 +22,31 @@ export const reducer: Reducer<ExQuestHistory, Action> = (state = {}, payload) =>
       return state
     }
     const { body } = payload
-    const currentClearedEx = new Set(Object.values(state).reduce((a, b) => [...a, ...b], []))
+    const newState = { ...state }
     const clearedMapList = Object.keys(EX_MAPS).map(id => parseInt(id))
       .filter((id) => {
         const map = body.api_map_info.find(({ api_id }) => api_id === id)
-        return map && map.api_cleared > 0 && !currentClearedEx.has(id)
+        return map && map.api_cleared > 0
       })
-    if (clearedMapList.length) {
-      const rankNo = getDateNo()
-      const list = [
-        ...state[rankNo] || [],
-        ...clearedMapList,
-      ]
-      return {
-        ...state,
-        [rankNo]: list,
-      }
+    const clearedMapSet = new Set(clearedMapList)
+    // Keep state sync with map data
+    for (const key of Object.keys(newState)) {
+      const ts = parseInt(key)
+      newState[ts] = newState[ts].filter(id => clearedMapSet.has(id))
     }
-    return state
+    const currentExSet = new Set(Object.values(state).reduce((a, b) => [...a, ...b], []))
+    const newClearedEx = clearedMapList.filter(id => !currentExSet.has(id))
+    if (newClearedEx.length) {
+      const rankNo = getDateNo()
+      if (!newState[rankNo]) {
+        newState[rankNo] = []
+      }
+      newState[rankNo] = [
+        ...newState[rankNo],
+        ...newClearedEx,
+      ]
+    }
+    return newState
   }
   default: {
     return state
