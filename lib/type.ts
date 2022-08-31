@@ -12,7 +12,7 @@ export interface UserData {
   api_mxltvkpyuklh: number, // rank
   api_pbgkfylkbjuy: number,
   api_pcumlrymlujh: number,
-  api_wuhnhojjxmke: number, // encrypted key
+  api_wuhnhojjxmke: number, // encrypted senka
 }
 
 export interface RankingAPIData {

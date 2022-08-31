@@ -44,6 +44,7 @@ const extractCurrentExperience = ({ type, body }: ExperienceAPIResponseAction): 
   }
 }
 
+// state: Record<SenkaCircleId, experience>. SenkaCircleId = 1000 is current experience
 export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
   const { type } = payload
   if (type === '@@poi-plugin-senka-calc/initialize') {
@@ -55,20 +56,24 @@ export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
       return state
     }
     const current = moment.tz('Asia/Tokyo')
-    const lastOfSenka = moment.tz('Asia/Tokyo').endOf('month').subtract(2, 'hours')
+    const startOfSenka = moment.tz('Asia/Tokyo').startOf('month').add(2, 'hours')
+    const endOfSenka = moment.tz('Asia/Tokyo').endOf('month').subtract(2, 'hours')
     // Don't record senka after 22:00 of the end day of month
-    if (current.isAfter(lastOfSenka)) {
+    if (current.isAfter(endOfSenka)) {
       return state
     }
     const dateNo = getDateNo()
-    // 1000: current senka
-    if (!state[dateNo]) {
+    // when entering new senka circle, record the base experience
+    // (which is the value of former current experience)
+    if (!state[dateNo] && current.isAfter(startOfSenka)) {
       return {
         ...state,
         [dateNo]: state[1000] || currentExperience,
         1000: currentExperience,
       }
     } else {
+    // don't overwrite experience of existed senka circle or
+    // when the first senka circle has not started yet
       return {
         ...state,
         1000: currentExperience,

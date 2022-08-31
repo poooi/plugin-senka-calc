@@ -89,6 +89,12 @@ export const Calender: React.FC = () => {
     )
   }, [getSenkaByDate])
 
+  const current = moment.tz('Asia/Tokyo')
+  const startOfSenka = moment.tz('Asia/Tokyo').startOf('month').add(2, 'hour')
+  const representDate = current.isSameOrBefore(startOfSenka) ?
+    current.toDate() :
+    moment.tz('Asia/Tokyo').subtract(2, 'hour').toDate()
+
   return (
     <Container>
       <Title>
@@ -103,7 +109,7 @@ export const Calender: React.FC = () => {
             localeUtils={MomentLocalUtils}
             locale={locale}
             renderDay={renderDay}
-            selectedDays={moment.tz('Asia/Tokyo').subtract(2, 'hour').toDate()}
+            selectedDays={representDate}
           />
         </FullWidth>
       </BPDatePicker>
