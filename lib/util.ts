@@ -72,7 +72,7 @@ export const transferArchiveToNewMonth = (archive: Archive): Archive => {
     targetSenka: archive.targetSenka,
     date: moment.tz('Asia/Tokyo').format(),
   }
-  // From last quarterly cycle
+  // From former quarterly cycle
   if (moment.tz('Asia/Tokyo').startOf('month').subtract(2, 'month').isAfter(archiveDate)) {
     return newArchive
   }
@@ -98,6 +98,7 @@ export const transferArchiveToNewMonth = (archive: Archive): Archive => {
       })
     }
   }
+  newArchive.excludedQuests = [...excludedQuestsSet]
   return newArchive
 }
 
