@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import moment from 'moment-timezone'
 import { Archive, ExQuestHistory, LegacyArchive } from './type'
 import { EX_MAPS, EMPTY_ARCHIVE, MILLISECONDS_OF_12_HOURS, SENKA_QUESTS, QUARTERLY_QUEST_REFRESH_MONTH } from './const'
+import { omitBy } from 'lodash'
 
 // Get record no
 export const getDateNo = (ts: Date = new Date()): number => {
@@ -171,4 +172,8 @@ export const dateNoToDate = (dateNo: number): [number, boolean] => {
     Math.floor(dateNo / 2) + 1,
     dateNo % 2 === 1,
   ]
+}
+
+export const removeKeysGreaterThan = <T>(record: Record<number, T> = {}, limit: number) => {
+  return omitBy(record, (value, key) => parseInt(key) > limit)
 }

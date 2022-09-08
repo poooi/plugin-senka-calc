@@ -1,4 +1,4 @@
-import { getDateNo } from "../lib/util"
+import { getDateNo, removeKeysGreaterThan } from "../lib/util"
 import { Reducer } from "redux"
 import { SenkaHistory } from "../lib/type"
 import moment from "moment-timezone"
@@ -51,7 +51,7 @@ export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
     const { archive } = payload
     return archive.experienceHistory
   } else {
-    const currentExperience = extractCurrentExperience(payload)
+    const currentExperience = Math.trunc(extractCurrentExperience(payload))
     if (!currentExperience || currentExperience < 0) {
       return state
     }
@@ -63,11 +63,12 @@ export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
       return state
     }
     const dateNo = getDateNo()
+    const lastState = removeKeysGreaterThan(state, dateNo)
     // when entering new senka circle, record the base experience
     // (which is the value of former current experience)
     if (!state[dateNo] && current.isAfter(startOfSenka)) {
       return {
-        ...state,
+        ...lastState,
         [dateNo]: state[1000] || currentExperience,
         1000: currentExperience,
       }
@@ -75,7 +76,7 @@ export const reducer: Reducer<SenkaHistory, Action> = (state = {}, payload) => {
     // don't overwrite experience of existed senka circle or
     // when the first senka circle has not started yet
       return {
-        ...state,
+        ...lastState,
         1000: currentExperience,
       }
     }

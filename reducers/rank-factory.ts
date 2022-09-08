@@ -1,7 +1,7 @@
 
 import { Reducer } from "redux"
 import { SenkaHistory, UserData } from "../lib/type"
-import { getRankDateNo } from "../lib/util"
+import { getRankDateNo, removeKeysGreaterThan } from "../lib/util"
 
 import { magicManager } from '../lib/magic'
 import { APIRankingAction, InitializeAction } from "./actions"
@@ -15,8 +15,9 @@ function getUpdatedSenkaHistory(state: SenkaHistory, user: UserData) {
   const encryptedSenka = user.api_wuhnhojjxmke
   const senka = magicManager.decryptSenka(rankNo, encryptedSenka)
   const timeNo = getRankDateNo()
+  const lastState = removeKeysGreaterThan(state, timeNo)
   return {
-    ...state,
+    ...lastState,
     [timeNo]: senka,
   }
 }
