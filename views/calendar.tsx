@@ -104,7 +104,7 @@ export const Calender: React.FC = () => {
       <BPDatePicker className={classnames(DateTimeClasses.DATEPICKER, Classes.ELEVATION_1)}>
         <FullWidth className={DateTimeClasses.DATEPICKER_CONTENT}>
           <DayPickerFull
-            canChangeMonth={false}
+            canChangeMonth={true}
             enableOutsideDaysClick={false}
             localeUtils={MomentLocalUtils}
             locale={locale}
