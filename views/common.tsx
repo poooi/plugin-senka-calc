@@ -10,7 +10,8 @@ export const Title = styled.h5`
   display: flex;
   align-items: center;
   background-color: ${Colors.LIGHT_GRAY2};
-  .bp4-dark & {
+  .bp4-dark &,
+  .bp5-dark & {
     background-color: ${Colors.DARK_GRAY5};
   }
 `

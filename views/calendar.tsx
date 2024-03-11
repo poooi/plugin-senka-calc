@@ -20,7 +20,8 @@ const FullWidth = styled.div`
 `
 const BPDatePicker = styled(FullWidth)`
   background: #FFFFFF20 !important;
-  .bp4-dark & {
+  .bp4-dark &,
+  .bp5-dark & {
     background: ${Colors.DARK_GRAY3 + '20'} !important;
   }
 `
