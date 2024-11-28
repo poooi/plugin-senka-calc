@@ -15,6 +15,7 @@ export const EX_MAPS: Record<number, number> = {
   45: 180,
   55: 200,
   65: 250,
+  75: 170,
 }
 
 export const EXPERIENCE_TO_SENKA_RATE = 7 / 10000
