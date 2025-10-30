@@ -10,6 +10,10 @@ import { EXPERIENCE_TO_SENKA_RATE, EX_MAPS, SENKA_QUESTS } from '../lib/const'
 import { SenkaHistory } from 'lib/type'
 import { Container, Title } from './common'
 import { Tooltip } from 'views/components/etc/overlay'
+import * as remote from '@electron/remote'
+import EventEmitter from 'events'
+
+const gameAPIBroadcaster: EventEmitter = remote.require('./lib/game-api-broadcaster')
 
 const SenkaText = styled.span`
   padding-right: 5px;
@@ -74,6 +78,17 @@ export const Info: React.FC = (prop) => {
       magicManager.removeListener('magic-refreshed', callback)
     }
   }, [prop])
+  useEffect(() => {
+    const cb = (_method: string, [domain, path]: string[]) => {
+      if (path === '/kcsapi/api_get_member/record') {
+        onRefreshButtonClick();
+      }
+    }
+    gameAPIBroadcaster.addListener('network.on.response', cb)
+    return () => {
+      gameAPIBroadcaster.removeListener('network.on.response', cb)
+    }
+  }, [onRefreshButtonClick]);
   const rankList: [number, SenkaHistory][] = [
     [5, rank5],
     [20, rank20],
