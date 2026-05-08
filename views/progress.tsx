@@ -45,7 +45,8 @@ const PlannedQuestSenka = styled(ProgressBar)`
 const UnfinishedSenka = styled(ProgressBar)`
   background-color: ${Colors.DARK_GRAY5};
   .bp4-dark &,
-  .bp5-dark & {
+  .bp5-dark &,
+  .bp6-dark & {
     background-color: ${Colors.LIGHT_GRAY5};
   }
 `

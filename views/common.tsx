@@ -11,7 +11,8 @@ export const Title = styled.h5`
   align-items: center;
   background-color: ${Colors.LIGHT_GRAY2};
   .bp4-dark &,
-  .bp5-dark & {
+  .bp5-dark &,
+  .bp6-dark & {
     background-color: ${Colors.DARK_GRAY5};
   }
 `
