@@ -103,7 +103,6 @@ export const pluginWillUnload = () => {
 
 const requiredCSS = [
   '@blueprintjs/select/lib/css/blueprint-select.css',
-  '@blueprintjs/popover2/lib/css/blueprint-popover2.css',
   '@blueprintjs/datetime/lib/css/blueprint-datetime.css',
 ]
 
