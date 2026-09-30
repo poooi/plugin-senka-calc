@@ -20,10 +20,13 @@ export { reducer } from './reducers'
 
 const Row = styled.div`
   display: flex;
+  flex-wrap: wrap;
 `
 
+// Stack the columns when the plugin panel is narrow
 const Col = styled.div`
-  flex: 1;
+  flex: 1 1 320px;
+  min-width: 0;
 `
 
 const basicObserverCallback: Dispatcher<APIBasic> = async (dispatch, current, previous) => {

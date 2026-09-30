@@ -22,5 +22,9 @@
   "Ranking points of planned extra operations {{ point }}": "未完成 EO 战果: {{ point }}",
   "Ranking points of planned quests {{ point }}": "未完成任务战果: {{ point }}",
   "Remaining ranking points to reach target {{ point }}": "剩余战果: {{ point }}",
-  "Target of ranking points {{ point }}": "目标战果: {{ point }}"
+  "Target of ranking points {{ point }}": "目标战果: {{ point }}",
+  "Target reached": "已达成目标",
+  "No matching quests": "没有匹配的任务",
+  "None": "无",
+  "Open the ranking page in game to load ranking data": "请在游戏中打开战果排行页面以载入战果数据"
 }

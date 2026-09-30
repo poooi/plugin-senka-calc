@@ -1,8 +1,15 @@
 import path from 'path'
 import fs from 'fs-extra'
 import moment from 'moment-timezone'
-import { Archive, ExQuestHistory, LegacyArchive } from './type'
-import { EX_MAPS, EMPTY_ARCHIVE, MILLISECONDS_OF_12_HOURS, SENKA_QUESTS, QUARTERLY_QUEST_REFRESH_MONTH } from './const'
+import { Archive, ExQuestHistory, LegacyArchive, SenkaHistory } from './type'
+import {
+  EX_MAPS,
+  EMPTY_ARCHIVE,
+  EXPERIENCE_TO_SENKA_RATE,
+  MILLISECONDS_OF_12_HOURS,
+  SENKA_QUESTS,
+  QUARTERLY_QUEST_REFRESH_MONTH,
+} from './const'
 import { omitBy } from 'lodash'
 
 // Get record no
@@ -176,4 +183,33 @@ export const dateNoToDate = (dateNo: number): [number, boolean] => {
 
 export const removeKeysGreaterThan = <T>(record: Record<number, T> = {}, limit: number) => {
   return omitBy(record, (value, key) => parseInt(key) > limit)
+}
+
+// Ranking points earned since the last ranking update, not yet shown in the ranking list
+export const getStagingSenka = (
+  rankUser: SenkaHistory,
+  experienceHistory: SenkaHistory,
+  exHistory: ExQuestHistory,
+  questHistory: ExQuestHistory,
+): number => {
+  const lastUpdateDateNo = parseInt(getElementByIndex(Object.keys(rankUser), -1))
+  const experienceDelta = getElementFromNumberRecords(experienceHistory, -1) - experienceHistory[lastUpdateDateNo]
+  // No ranking record yet, or no experience record at that time
+  const experienceSenka = Number.isFinite(experienceDelta) ? experienceDelta * EXPERIENCE_TO_SENKA_RATE : 0
+  const uncountedExSenka = Object.keys(exHistory)
+    .map(dateNo => parseInt(dateNo))
+    .filter(dateNo => dateNo >= lastUpdateDateNo)
+    .map(dateNo => exHistory[dateNo])
+    .reduce((a, b) => [...a, ...b], [])
+    .map(id => EX_MAPS[id] || 0)
+    .reduce((a, b) => a + b, 0)
+  const uncountedQuestSenka = Object.keys(questHistory)
+    .map(dateNo => parseInt(dateNo))
+    // Senka of dateNo 1000 will be moved to next month
+    .filter(dateNo => dateNo >= lastUpdateDateNo && dateNo < 1000)
+    .map(dateNo => questHistory[dateNo])
+    .reduce((a, b) => [...a, ...b], [])
+    .map(questId => SENKA_QUESTS.find(({ id }) => id === questId)?.senka || 0)
+    .reduce((a, b) => a + b, 0)
+  return experienceSenka + uncountedExSenka + uncountedQuestSenka
 }
