@@ -26,5 +26,6 @@
   "Target reached": "目標に到達しました",
   "No matching quests": "該当する任務がありません",
   "None": "なし",
-  "Open the ranking page in game to load ranking data": "ゲーム内でランキングページを開くと、ランキングデータが読み込まれます"
+  "Open the ranking page in game to load ranking data": "ゲーム内でランキングページを開くと、ランキングデータが読み込まれます",
+  "The ranking shows last month until 3 AM JST, ranking data of this month can be loaded after that": "午前3時（日本時間）まではランキングに先月の結果が表示されます。今月のランキングデータはそれ以降に読み込めます"
 }

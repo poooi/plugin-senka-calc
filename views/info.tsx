@@ -11,6 +11,7 @@ import { Container, Title } from './common'
 import { Tooltip } from 'views/components/etc/overlay'
 import * as remote from '@electron/remote'
 import EventEmitter from 'events'
+import moment from 'moment-timezone'
 
 const gameAPIBroadcaster: EventEmitter = remote.require('./lib/game-api-broadcaster')
 
@@ -134,6 +135,9 @@ export const Info: React.FC = () => {
     [rankUser, experienceHistory, exHistory, questHistory]
   )
   const hasRankingData = Object.keys(rankUser).length > 0
+  // Same boundary as the reducers use to skip recording
+  const isBeforeRankingStart = moment.tz('Asia/Tokyo')
+    .isBefore(moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours'))
 
   return (
     <Container>
@@ -162,7 +166,9 @@ export const Info: React.FC = () => {
       </Title>
       {!hasRankingData && (
         <HintCallout icon="info-sign">
-          {t('Open the ranking page in game to load ranking data')}
+          {isBeforeRankingStart ?
+            t('The ranking shows last month until 3 AM JST, ranking data of this month can be loaded after that') :
+            t('Open the ranking page in game to load ranking data')}
         </HintCallout>
       )}
       <HTMLTable striped condensed style={{ width: '100%' }}>
