@@ -204,7 +204,8 @@ export const Info: React.FC = () => {
                   </Td>
                   <Td>
                     <SenkaText>{senka ?? '-'}</SenkaText>
-                    {hasRecord && renderDelta(delta, isUser ? 1 : 0)}
+                    {/* user's staging points do not depend on a ranking record */}
+                    {(hasRecord || isUser) && renderDelta(delta, isUser ? 1 : 0)}
                   </Td>
                 </Row>
               )
