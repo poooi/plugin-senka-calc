@@ -42,16 +42,17 @@ const Legend = styled.ul`
   font-size: 12px;
 `
 
+// Labels may wrap, otherwise they widen the whole calculator column
 const LegendItem = styled.li`
   display: flex;
   align-items: center;
-  white-space: nowrap;
 `
 
 const Swatch = styled.span`
   display: inline-block;
   width: 10px;
   height: 10px;
+  flex-shrink: 0;
   margin-right: 4px;
   border-radius: 2px;
 `
