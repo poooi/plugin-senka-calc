@@ -61,6 +61,10 @@ const HintCallout = styled(Callout)`
   margin-bottom: 8px;
 `
 
+// Same boundary as the reducers use to skip recording
+const checkBeforeRankingStart = () => moment.tz('Asia/Tokyo')
+  .isBefore(moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours'))
+
 const renderDelta = (delta: number, digits: number) => {
   if (!Number.isFinite(delta)) {
     return null
@@ -91,6 +95,12 @@ export const Info: React.FC = () => {
   } = useSelector(pluginDataSelector)
   const { t } = useTranslation('poi-plugin-senka-calc')
   const [isRefreshingMagic, setIsRefreshingMagic] = useState(false)
+  // Kept in state and re-checked, so the hint switches at 03:00 even in an idle session
+  const [isBeforeRankingStart, setIsBeforeRankingStart] = useState(checkBeforeRankingStart)
+  useEffect(() => {
+    const timer = setInterval(() => setIsBeforeRankingStart(checkBeforeRankingStart()), 60 * 1000)
+    return () => clearInterval(timer)
+  }, [])
   const onRefreshButtonClick = useCallback(() => {
     setIsRefreshingMagic(true)
     magicManager.isParsingMagic = true
@@ -135,9 +145,6 @@ export const Info: React.FC = () => {
     [rankUser, experienceHistory, exHistory, questHistory]
   )
   const hasRankingData = Object.keys(rankUser).length > 0
-  // Same boundary as the reducers use to skip recording
-  const isBeforeRankingStart = moment.tz('Asia/Tokyo')
-    .isBefore(moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours'))
 
   return (
     <Container>
