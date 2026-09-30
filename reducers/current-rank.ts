@@ -16,15 +16,16 @@ export const reducer: Reducer<number, Action> = (state = -1, payload) => {
     return archive.currentRank
   }
   case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
+    const { body } = payload
+    const userList = body.api_list
+    // Keep refreshing the key even when the data is not recorded, see rank-factory
+    magicManager.updateMagicNum(userList)
     const startOfRecord = moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours')
     const now = moment.tz('Asia/Tokyo')
     // the ranking api still returns data of former month, skip recording
     if (now.isBefore(startOfRecord)) {
       return state
     }
-    const { body } = payload
-    const userList = body.api_list
-    magicManager.updateMagicNum(userList)
     const { nickname } = magicManager
     for (const user of userList) {
       if (user.api_mtjmdcwtvhdr === nickname) {

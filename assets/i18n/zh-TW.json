@@ -26,5 +26,6 @@
   "Target reached": "已達成目標",
   "No matching quests": "沒有符合的任務",
   "None": "無",
-  "Open the ranking page in game to load ranking data": "請在遊戲中開啟戰果排行頁面以載入戰果資料"
+  "Open the ranking page in game to load ranking data": "請在遊戲中開啟戰果排行頁面以載入戰果資料",
+  "The ranking shows last month until 3 AM JST, ranking data of this month can be loaded after that": "日本時間凌晨3點前排行榜顯示的是上個月的結果，本月的戰果資料需在此之後載入"
 }

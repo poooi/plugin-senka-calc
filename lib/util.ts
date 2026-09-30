@@ -192,9 +192,16 @@ export const getStagingSenka = (
   exHistory: ExQuestHistory,
   questHistory: ExQuestHistory,
 ): number => {
-  const lastUpdateDateNo = parseInt(getElementByIndex(Object.keys(rankUser), -1))
-  const experienceDelta = getElementFromNumberRecords(experienceHistory, -1) - experienceHistory[lastUpdateDateNo]
-  // No ranking record yet, or no experience record at that time
+  const rankDateNos = Object.keys(rankUser)
+  // Without a ranking record this month (e.g. before 03:00 JST on the 1st),
+  // everything since the start of the month is still staging
+  const lastUpdateDateNo = rankDateNos.length > 0 ? parseInt(getElementByIndex(rankDateNos, -1)) : -Infinity
+  const baseExperience = Number.isFinite(lastUpdateDateNo) ?
+    experienceHistory[lastUpdateDateNo] :
+    // 1000 is the current experience, not the base of a senka circle
+    experienceHistory[Math.min(...Object.keys(experienceHistory).map(Number).filter(dateNo => dateNo < 1000))]
+  const experienceDelta = getElementFromNumberRecords(experienceHistory, -1) - baseExperience
+  // No experience record at that time yet
   const experienceSenka = Number.isFinite(experienceDelta) ? experienceDelta * EXPERIENCE_TO_SENKA_RATE : 0
   const uncountedExSenka = Object.keys(exHistory)
     .map(dateNo => parseInt(dateNo))

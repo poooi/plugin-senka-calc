@@ -42,16 +42,18 @@ export const reducerFactory = (anchor: Anchor): Reducer<SenkaHistory, Action> =>
       }
     }
     case '@@Response/kcsapi/api_req_ranking/mxltvkpyuklh': {
+      const { body } = payload
+      const userList = body.api_list
+      const page = body.api_disp_page
+      // The key is valid for whatever the api returns now, so a refresh can finish
+      // even while the ranking still shows the former month
+      magicManager.updateMagicNum(userList)
       const startOfRecord = moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours')
       const now = moment.tz('Asia/Tokyo')
       // the ranking api still returns data of former month, skip recording
       if (now.isBefore(startOfRecord)) {
         return state
       }
-      const { body } = payload
-      const userList = body.api_list
-      const page = body.api_disp_page
-      magicManager.updateMagicNum(userList)
       const { nickname } = magicManager
       for (const user of userList) {
         if (anchor === 'user') {

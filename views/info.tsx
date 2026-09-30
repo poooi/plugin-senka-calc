@@ -11,6 +11,7 @@ import { Container, Title } from './common'
 import { Tooltip } from 'views/components/etc/overlay'
 import * as remote from '@electron/remote'
 import EventEmitter from 'events'
+import moment from 'moment-timezone'
 
 const gameAPIBroadcaster: EventEmitter = remote.require('./lib/game-api-broadcaster')
 
@@ -60,6 +61,10 @@ const HintCallout = styled(Callout)`
   margin-bottom: 8px;
 `
 
+// Same boundary as the reducers use to skip recording
+const checkBeforeRankingStart = () => moment.tz('Asia/Tokyo')
+  .isBefore(moment.tz('Asia/Tokyo').startOf('month').add(3, 'hours'))
+
 const renderDelta = (delta: number, digits: number) => {
   if (!Number.isFinite(delta)) {
     return null
@@ -90,6 +95,12 @@ export const Info: React.FC = () => {
   } = useSelector(pluginDataSelector)
   const { t } = useTranslation('poi-plugin-senka-calc')
   const [isRefreshingMagic, setIsRefreshingMagic] = useState(false)
+  // Kept in state and re-checked, so the hint switches at 03:00 even in an idle session
+  const [isBeforeRankingStart, setIsBeforeRankingStart] = useState(checkBeforeRankingStart)
+  useEffect(() => {
+    const timer = setInterval(() => setIsBeforeRankingStart(checkBeforeRankingStart()), 60 * 1000)
+    return () => clearInterval(timer)
+  }, [])
   const onRefreshButtonClick = useCallback(() => {
     setIsRefreshingMagic(true)
     magicManager.isParsingMagic = true
@@ -162,7 +173,9 @@ export const Info: React.FC = () => {
       </Title>
       {!hasRankingData && (
         <HintCallout icon="info-sign">
-          {t('Open the ranking page in game to load ranking data')}
+          {isBeforeRankingStart ?
+            t('The ranking shows last month until 3 AM JST, ranking data of this month can be loaded after that') :
+            t('Open the ranking page in game to load ranking data')}
         </HintCallout>
       )}
       <HTMLTable striped condensed style={{ width: '100%' }}>
@@ -198,7 +211,8 @@ export const Info: React.FC = () => {
                   </Td>
                   <Td>
                     <SenkaText>{senka ?? '-'}</SenkaText>
-                    {hasRecord && renderDelta(delta, isUser ? 1 : 0)}
+                    {/* user's staging points do not depend on a ranking record */}
+                    {(hasRecord || isUser) && renderDelta(delta, isUser ? 1 : 0)}
                   </Td>
                 </Row>
               )
