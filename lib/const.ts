@@ -14,6 +14,7 @@ export const EX_MAPS: Record<number, number> = {
   35: 150,
   45: 180,
   55: 200,
+  56: 225,
   65: 250,
   75: 170,
 }
