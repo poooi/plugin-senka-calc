@@ -42,8 +42,7 @@ const CornerLabel = styled.div`
   border-bottom-right-radius: 18px;
   top: 0;
   left: 0;
-  max-width: 100%;
-  box-sizing: border-box;
+  z-index: 1;
   white-space: nowrap;
   opacity: 0.9;
   align-items: center;
@@ -51,10 +50,6 @@ const CornerLabel = styled.div`
   background-color: ${Colors.BLUE3};
 `
 
-const CornerLabelText = styled.span`
-  overflow: hidden;
-  text-overflow: ellipsis;
-`
 
 const DateIcon = styled(Icon)`
   flex-shrink: 0;
@@ -196,8 +191,8 @@ export const Info: React.FC = () => {
                   <Td>
                     {isUser && <Icon icon="person" size={12} style={{ marginRight: 4 }} />}
                     {rank > 0 ? rank : '-'}
-                    <CornerLabel title={lastUpdateText}>
-                      <CornerLabelText>{lastUpdateText}</CornerLabelText>
+                    <CornerLabel>
+                      {lastUpdateText}
                       {hasRecord && <DateIcon size={10} icon={isDate ? 'full-circle' : 'moon'} />}
                     </CornerLabel>
                   </Td>

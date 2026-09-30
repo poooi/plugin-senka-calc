@@ -23,10 +23,9 @@ const Row = styled.div`
   flex-wrap: wrap;
 `
 
-// Stack the columns when the plugin panel is narrow
+// Side by side like before; only wraps once the content can no longer fit
 const Col = styled.div`
-  flex: 1 1 320px;
-  min-width: 0;
+  flex: 1 1 0;
 `
 
 const basicObserverCallback: Dispatcher<APIBasic> = async (dispatch, current, previous) => {
