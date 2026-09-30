@@ -1,12 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { Button, HTMLTable, Icon, Position } from '@blueprintjs/core'
+import { Button, Callout, Colors, HTMLTable, Icon, Position } from '@blueprintjs/core'
 import styled from 'styled-components'
 import { useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
 import { pluginDataSelector } from '../selectors'
 import { magicManager } from '../lib/magic'
-import { dateNoToDate, getElementByIndex, getElementFromNumberRecords } from '../lib/util'
-import { EXPERIENCE_TO_SENKA_RATE, EX_MAPS, SENKA_QUESTS } from '../lib/const'
+import { dateNoToDate, getElementByIndex, getElementFromNumberRecords, getStagingSenka } from '../lib/util'
 import { SenkaHistory } from 'lib/type'
 import { Container, Title } from './common'
 import { Tooltip } from 'views/components/etc/overlay'
@@ -19,8 +18,9 @@ const SenkaText = styled.span`
   padding-right: 5px;
 `
 const IncreasementText = styled.span`
-  font-size: 0.9;
+  font-size: 0.9em;
   opacity: 0.75;
+  white-space: nowrap;
 `
 
 const Td = styled.td`
@@ -28,29 +28,60 @@ const Td = styled.td`
   padding-top: 18px !important;
 `
 
+const UserRow = styled.tr`
+  font-weight: 600;
+`
+
 const CornerLabel = styled.div`
   display: flex;
   font-size: 12px;
+  font-weight: normal;
   position: absolute;
   padding: 0 16px 0 5px;
   line-height: 16px;
   border-bottom-right-radius: 18px;
   top: 0;
   left: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   white-space: nowrap;
   opacity: 0.9;
   align-items: center;
+  color: ${Colors.WHITE};
+  background-color: ${Colors.BLUE3};
+`
+
+const CornerLabelText = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
 `
 
 const DateIcon = styled(Icon)`
+  flex-shrink: 0;
   margin-left: 4px;
 `
+
+const HintCallout = styled(Callout)`
+  margin-bottom: 8px;
+`
+
+const renderDelta = (delta: number, digits: number) => {
+  if (!Number.isFinite(delta)) {
+    return null
+  }
+  return (
+    <IncreasementText>
+      {delta !== 0 && <Icon icon={delta > 0 ? 'arrow-up' : 'arrow-down'} size={12} />}
+      {Math.abs(delta).toFixed(digits)}
+    </IncreasementText>
+  )
+}
 
 const TooltipRightAlign = styled(Tooltip)`
   margin-left: auto;
 `
 
-export const Info: React.FC = (prop) => {
+export const Info: React.FC = () => {
   const {
     rank5 = {},
     rank20 = {},
@@ -77,18 +108,20 @@ export const Info: React.FC = (prop) => {
     return () => {
       magicManager.removeListener('magic-refreshed', callback)
     }
-  }, [prop])
+  }, [callback])
   useEffect(() => {
-    const cb = (_method: string, [domain, path]: string[]) => {
+    const cb = (_method: string, [, path]: string[]) => {
+      // Refresh silently: the spinner is only for a refresh the user asked for,
+      // otherwise it keeps spinning until the ranking page is opened
       if (path === '/kcsapi/api_get_member/record') {
-        onRefreshButtonClick();
+        magicManager.isParsingMagic = true
       }
     }
     gameAPIBroadcaster.addListener('network.on.response', cb)
     return () => {
       gameAPIBroadcaster.removeListener('network.on.response', cb)
     }
-  }, [onRefreshButtonClick]);
+  }, [])
   const rankList: [number, SenkaHistory][] = [
     [5, rank5],
     [20, rank20],
@@ -101,27 +134,11 @@ export const Info: React.FC = (prop) => {
     return getElementFromNumberRecords(rankHistory, -1) - getElementFromNumberRecords(rankHistory, -2)
   }, [])
 
-  const userSenkaDelta = useMemo(() => {
-    const lastUpdateDateNo = parseInt(getElementByIndex(Object.keys(rankUser), -1))
-    const experienceDelta = getElementFromNumberRecords(experienceHistory, -1) - experienceHistory[lastUpdateDateNo]
-    const experienceSenka = experienceDelta * EXPERIENCE_TO_SENKA_RATE
-    const uncountedExSenka = Object.keys(exHistory)
-      .map(dateNo => parseInt(dateNo))
-      .filter(dateNo => dateNo >= lastUpdateDateNo)
-      .map(dateNo => exHistory[dateNo])
-      .reduce((a, b) => [...a, ...b], [])
-      .map(id => EX_MAPS[id] || 0)
-      .reduce((a, b) => a + b, 0)
-    const uncountedQuestSenka = Object.keys(questHistory)
-      .map(dateNo => parseInt(dateNo))
-      // Senka of dateNo 1000 will be moved to next month
-      .filter(dateNo => dateNo >= lastUpdateDateNo && dateNo < 1000)
-      .map(dateNo => questHistory[dateNo])
-      .reduce((a, b) => [...a, ...b], [])
-      .map(questId => SENKA_QUESTS.find(({id}) => id === questId)?.senka || 0)
-      .reduce((a, b) => a + b, 0)
-    return (experienceSenka + uncountedExSenka + uncountedQuestSenka).toFixed(1)
-  }, [rankUser, experienceHistory, exHistory, questHistory])
+  const userSenkaDelta = useMemo(
+    () => getStagingSenka(rankUser, experienceHistory, exHistory, questHistory),
+    [rankUser, experienceHistory, exHistory, questHistory]
+  )
+  const hasRankingData = Object.keys(rankUser).length > 0
 
   return (
     <Container>
@@ -148,6 +165,11 @@ export const Info: React.FC = (prop) => {
           />
         </TooltipRightAlign>
       </Title>
+      {!hasRankingData && (
+        <HintCallout icon="info-sign">
+          {t('Open the ranking page in game to load ranking data')}
+        </HintCallout>
+      )}
       <HTMLTable striped condensed style={{ width: '100%' }}>
         <thead>
           <tr>
@@ -158,30 +180,32 @@ export const Info: React.FC = (prop) => {
         <tbody>
           {
             rankList.map(([rank, rankHistory], index) => {
+              const hasRecord = Object.keys(rankHistory).length > 0
               const lastUpdateDateNo = parseInt(getElementByIndex(Object.keys(rankHistory), -1))
               const [lastUpdateDate, isDate] = dateNoToDate(lastUpdateDateNo)
               const senka = getElementFromNumberRecords(rankHistory, -1)
-              const delta = index !== rankList.length - 1 ?
-                getDeltaForOtherUser(rankHistory) :
-                // last one is user's senka, show the experience delta instead
-                userSenkaDelta
+              const isUser = index === rankList.length - 1
+              const delta = isUser ?
+                // user's senka, show the experience delta instead
+                userSenkaDelta :
+                getDeltaForOtherUser(rankHistory)
+              const lastUpdateText = t('Last Update {{ date }}', { date: hasRecord ? lastUpdateDate : '-' })
+              const Row = isUser ? UserRow : 'tr'
               return (
-                <tr key={index}>
+                <Row key={index}>
                   <Td>
-                    {rank}
-                    <CornerLabel className="bg-primary">
-                      {t('Last Update {{ date }}', { date: lastUpdateDate })}
-                      <DateIcon size={10} icon={isDate ? 'full-circle' : 'moon'} />
+                    {isUser && <Icon icon="person" size={12} style={{ marginRight: 4 }} />}
+                    {rank > 0 ? rank : '-'}
+                    <CornerLabel title={lastUpdateText}>
+                      <CornerLabelText>{lastUpdateText}</CornerLabelText>
+                      {hasRecord && <DateIcon size={10} icon={isDate ? 'full-circle' : 'moon'} />}
                     </CornerLabel>
                   </Td>
                   <Td>
-                    <SenkaText>{senka}</SenkaText>
-                    <IncreasementText>
-                      <Icon icon="arrow-up" size={12}></Icon>
-                      {delta}
-                    </IncreasementText>
+                    <SenkaText>{senka ?? '-'}</SenkaText>
+                    {hasRecord && renderDelta(delta, isUser ? 1 : 0)}
                   </Td>
-                </tr>
+                </Row>
               )
             })
           }

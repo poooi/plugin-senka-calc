@@ -5,7 +5,7 @@ import { Container, Title } from './common'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { pluginDataSelector } from '../selectors'
-import styled, { css } from 'styled-components'
+import styled from 'styled-components'
 import moment from 'moment-timezone'
 import { getDateNo } from '../lib/util'
 import { EXPERIENCE_TO_SENKA_RATE } from '../lib/const'
@@ -65,8 +65,9 @@ const DateContainer = styled.div`
 `
 
 const SenkaContainer = styled.div`
-  font-size: 90%;
+  font-size: 80%;
   line-height: 1;
+  white-space: nowrap;
 `
 
 const getLocale = (locale: string) => {
@@ -94,7 +95,7 @@ export const Calender: React.FC = () => {
 
   const getSenkaByDate = useCallback((date: number) => {
     if (Object.keys(experienceHistory).length === 0) {
-      return 0
+      return '-'
     }
     const firstRecord = parseInt(Object.keys(experienceHistory)[0])
     const todayRefreshTs = moment.tz('Asia/Tokyo').startOf('day').add(2, 'hour')
@@ -105,9 +106,14 @@ export const Calender: React.FC = () => {
       return '-'
     }
     let startDateNo = Math.max(firstRecord, getDateNo(moment.tz('Asia/Tokyo').date(date).hour(3).toDate()))
+    const dayEndDateNo = getDateNo(moment.tz('Asia/Tokyo').date(date + 1).hour(3).toDate())
+    // The whole day is before the first record, nothing is known about it
+    if (!isToday && dayEndDateNo <= firstRecord) {
+      return '-'
+    }
     let endDateNo = isToday ?
       1000 :
-      Math.max(firstRecord, getDateNo(moment.tz('Asia/Tokyo').date(date + 1).hour(3).toDate()))
+      Math.max(firstRecord, dayEndDateNo)
     while (experienceHistory[startDateNo] == null && startDateNo > firstRecord) {
       startDateNo--
     }
@@ -142,7 +148,8 @@ export const Calender: React.FC = () => {
     moment.tz('Asia/Tokyo').subtract(2, 'hour').toDate()
 
   const v7Props = {
-    canChangeMonth: true,
+    // Values are looked up by day of month, so only the current month is meaningful
+    canChangeMonth: false,
     enableOutsideDaysClick: false,
     localeUtils: MomentLocalUtils,
     locale,
@@ -169,8 +176,9 @@ export const Calender: React.FC = () => {
         <Icon icon="calendar" style={{ paddingRight: 8 }} />
         {t('Calendar')}
       </Title>
-      <BPDatePicker className={classNames(Classes.ELEVATION_1, DayPickerClasses.DATEPICKER, 'bp5-datepicker', 'bp5-elevation-1')}>
-        <FullWidth className={classNames(DayPickerClasses.DATEPICKER_CONTENT, 'bp5-datepicker-content', 'bp5-elevation-1')}>
+      {/* bp5-* names are kept for poi builds that mix Blueprint versions */}
+      <BPDatePicker className={classNames(Classes.ELEVATION_1, DayPickerClasses.DATEPICKER, 'bp5-datepicker')}>
+        <FullWidth className={classNames(DayPickerClasses.DATEPICKER_CONTENT, 'bp5-datepicker-content')}>
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           <DayPickerFull {...(isV7 ? v7Props : v8Props) as any} />
         </FullWidth>

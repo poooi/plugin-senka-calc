@@ -22,5 +22,9 @@
   "Ranking points of planned extra operations {{ point }}": "残りのEOの戦果: {{ point }}",
   "Ranking points of planned quests {{ point }}": "残り任務の戦果: {{ point }}",
   "Remaining ranking points to reach target {{ point }}": "目標戦果まで残り: {{ point }}",
-  "Target of ranking points {{ point }}": "目標戦果: {{ point }}"
+  "Target of ranking points {{ point }}": "目標戦果: {{ point }}",
+  "Target reached": "目標に到達しました",
+  "No matching quests": "該当する任務がありません",
+  "None": "なし",
+  "Open the ranking page in game to load ranking data": "ゲーム内でランキングページを開くと、ランキングデータが読み込まれます"
 }
